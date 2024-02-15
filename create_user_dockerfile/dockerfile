@@ -18,11 +18,12 @@ RUN groupadd -g ${GID} ${USERNAME} && \
 WORKDIR /tmp/install
 
 # Copy anaconda installation script
-COPY Anaconda3-2023.09-0-Linux-x86_64.sh /tmp/install/anaconda.sh
+COPY Anaconda3-2023.09-0-Linux-x86_64.sh /tmp/install/anaconda3.sh
 
 # Install Anaconda
-RUN chmod +x /tmp/install/anaconda.sh && \
-    ./anaconda.sh -b -p /home/${USERNAME}/anaconda
+RUN mkdir -p /home/${USERNAME}/softwares
+RUN chmod +x /tmp/install/anaconda3.sh && \
+    ./anaconda3.sh -b -p /home/${USERNAME}/softwares/anaconda3
 
 # Stage 2: Build the final image
 FROM base_lab_image:v1.1
@@ -45,7 +46,8 @@ RUN echo "${USERNAME} ALL=(ALL) ALL" > /etc/sudoers.d/${USERNAME} && chmod 0440 
 USER ${USERNAME}:${USERNAME}
 
 # Copy Anaconda installation directory
-COPY --from=installer /home/${USERNAME}/anaconda /home/${USERNAME}/anaconda
+RUN mkdir -p /home/${USERNAME}/softwares
+COPY --from=installer /home/${USERNAME}/softwares/anaconda3 /home/${USERNAME}/softwares/anaconda3
 
 # Set working directory
 WORKDIR /home/${USERNAME}/workspace
@@ -53,15 +55,15 @@ WORKDIR /home/${USERNAME}/workspace
 VOLUME /home/${USERNAME}/workspace
 
 # Configure Conda and Pip
-ENV PATH /home/${USERNAME}/anaconda/bin:$PATH
-RUN /home/${USERNAME}/anaconda/bin/conda init bash && \
-    /home/${USERNAME}/anaconda/bin/conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/free/ && \
-    /home/${USERNAME}/anaconda/bin/conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main/ && \
-    /home/${USERNAME}/anaconda/bin/conda config --set show_channel_urls yes && \
-    /home/${USERNAME}/anaconda/bin/pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
+ENV PATH /home/${USERNAME}/softwares/anaconda3/bin:$PATH
+RUN /home/${USERNAME}/softwares/anaconda3/bin/conda init bash && \
+    /home/${USERNAME}/softwares/anaconda3/bin/conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/free/ && \
+    /home/${USERNAME}/softwares/anaconda3/bin/conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main/ && \
+    /home/${USERNAME}/softwares/anaconda3/bin/conda config --set show_channel_urls yes && \
+    /home/${USERNAME}/softwares/anaconda3/bin/pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
 
 # Initialize conda in shell, create conda environment, activate conda environment and install packages
-RUN . /home/${USERNAME}/anaconda/etc/profile.d/conda.sh && \
+RUN . /home/${USERNAME}/softwares/anaconda3/etc/profile.d/conda.sh && \
     conda create -n tevatron python=3.10 -y && \
     conda activate tevatron && \
     conda install -y faiss-gpu=1.7.4 mkl=2021 pytorch pytorch-cuda numpy -c pytorch -c nvidia && \
