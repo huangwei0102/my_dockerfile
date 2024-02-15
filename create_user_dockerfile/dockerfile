@@ -65,8 +65,8 @@ WORKDIR /home/${USERNAME}/workspace
 VOLUME /home/${USERNAME}/workspace
 
 # Configure Conda and Pip
-RUN echo ". /home/${USERNAME}/anaconda/etc/profile.d/conda.sh" >> ~/.bashrc && \
-    echo "conda activate" >> ~/.bashrc && \
+ENV PATH /home/${USERNAME}/anaconda/bin:$PATH
+RUN /home/${USERNAME}/anaconda/bin/conda init bash && \
     /home/${USERNAME}/anaconda/bin/conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/free/ && \
     /home/${USERNAME}/anaconda/bin/conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main/ && \
     /home/${USERNAME}/anaconda/bin/conda config --set show_channel_urls yes && \
