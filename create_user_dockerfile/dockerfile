@@ -8,12 +8,6 @@ ARG PASSWD
 ARG UID
 ARG GID
 
-# Set environment variables
-ENV USERNAME=${USERNAME} \
-    PASSWD=${PASSWD} \
-    UID=${UID} \
-    GID=${GID}
-
 # Create user with specified UID and GID
 RUN groupadd -g ${GID} ${USERNAME} && \
     useradd -m -s /bin/bash -u ${UID} -g ${GID} ${USERNAME} && \
@@ -39,12 +33,6 @@ ARG USERNAME
 ARG PASSWD
 ARG UID
 ARG GID
-
-# Set environment variables
-ENV USERNAME=${USERNAME} \
-    PASSWD=${PASSWD} \
-    UID=${UID} \
-    GID=${GID}
 
 # Create user with specified UID and GID
 RUN groupadd -g ${GID} ${USERNAME} && \
