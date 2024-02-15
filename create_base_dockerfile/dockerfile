@@ -19,7 +19,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     bash -c 'yes | unminimize'
 
 # Install some basic utilities
-RUN apt-get update && apt-get upgrade -y --fix-missing  \
+RUN export DEBIAN_FRONTEND=noninteractive && apt-get update && apt-get upgrade -y --fix-missing  \
     && apt-get -y --no-install-recommends \
     install  ca-certificates sudo git vim \
     traceroute inetutils-ping net-tools curl fontconfig apt-transport-https openssh-server\
